@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TANGBIRTHSANGMA — My Life Story</title>
+<meta name="description" content="TANGBIRTHSANGMA — My Life Story">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#eef7ff;color:#10243e}
+header{background:linear-gradient(135deg,#006eff,#00a8ff);color:white;padding:22px 16px;position:sticky;top:0;z-index:5}
+.wrap{max-width:950px;margin:auto}.top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+h1{margin:0;font-size:27px}.icons{display:flex;gap:8px}.icon{border:0;border-radius:12px;padding:10px 12px;background:#ffffff22;color:white;font-size:18px;cursor:pointer}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.nav{border:0;border-radius:10px;padding:9px 12px;background:#ffffff22;color:white;cursor:pointer}
+main{padding:25px 16px}.card{background:white;border-radius:18px;padding:20px;margin:14px 0;box-shadow:0 8px 25px #006eff18}
+.hero{padding:28px}.badge{display:inline-block;background:#dff2ff;color:#006eff;border-radius:999px;padding:7px 11px;font-size:13px}
+.story{border-left:4px solid #008cff}.date{color:#637993;font-size:13px}.hidden{display:none}
+input,textarea{width:100%;padding:12px;border:1px solid #cbd9e8;border-radius:10px;margin:7px 0 12px;font:inherit}
+button.primary{background:#006eff;color:white;border:0;border-radius:10px;padding:11px 15px;cursor:pointer}
+button.secondary{background:#e8f4ff;color:#006eff;border:0;border-radius:10px;padding:11px 15px;cursor:pointer}
+footer{text-align:center;padding:30px;color:#60758e}
+.modal{position:fixed;inset:0;background:#06182bcc;display:flex;align-items:center;justify-content:center;padding:20px;z-index:20}
+.modalbox{background:white;max-width:480px;width:100%;border-radius:18px;padding:22px}
+.small{font-size:13px;color:#65788e}
+@media(max-width:600px){h1{font-size:22px}.top{align-items:flex-start}.nav{font-size:12px}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<div class="top"><h1>TANGBIRTHSANGMA</h1><div class="icons">
+<button class="icon" title="Settings" onclick="openSettings()">⚙️</button>
+<button class="icon" title="Owner Login" onclick="openLogin()">👤</button>
+</div></div>
+<nav>
+<button class="nav" onclick="show('home')">Home</button>
+<button class="nav" onclick="show('stories')">My Stories</button>
+<button class="nav" onclick="show('about')">About</button>
+<button class="nav" onclick="show('contact')">Contact</button>
+</nav></div></header>
+
+<main class="wrap">
+<section id="home"><div class="card hero">
+<span class="badge">MY LIFE STORY</span>
+<h2>Welcome to TANGBIRTHSANGMA</h2>
+<p>This is my personal story website. New life-story entries can be added one day at a time.</p>
+<button class="primary" onclick="show('stories')">Read My Stories</button>
+</div></section>
+
+<section id="stories" class="hidden"><h2>My Stories</h2><div id="storyList"></div></section>
+
+<section id="about" class="hidden"><div class="card"><h2>About</h2><p>TANGBIRTHSANGMA is a personal life-story journal. Only stories that are published are shown here.</p></div></section>
+
+<section id="contact" class="hidden"><div class="card"><h2>Contact</h2><p class="small">Contact details can be added later. Do not publish your phone number, address, OTP, password, passport details, or other private information.</p></div></section>
+
+<section id="owner" class="hidden"><div class="card">
+<h2>Owner Area</h2><p class="small">Write a story entry, save it as a draft, or publish it.</p>
+<label>Date</label><input id="storyDate" type="date">
+<label>Story</label><textarea id="storyText" rows="8" placeholder="Write your story here..."></textarea>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="secondary" onclick="saveStory(false)">Save Draft</button><button class="primary" onclick="saveStory(true)">Publish</button><button class="secondary" onclick="logout()">Logout</button></div>
+<hr><h3>Your entries</h3><div id="ownerList"></div>
+</div></section>
+</main>
+<footer>TANGBIRTHSANGMA • My Life Story</footer>
+
+<div id="loginModal" class="modal hidden"><div class="modalbox">
+<h2>Owner Login</h2><p class="small">Demo password: change-me. For a real multi-device account, use a secure authentication backend instead of storing a password in this page.</p>
+<input id="password" type="password" placeholder="Password">
+<button class="primary" onclick="login()">Login</button> <button class="secondary" onclick="closeModal('loginModal')">Cancel</button>
+</div></div>
+
+<div id="settingsModal" class="modal hidden"><div class="modalbox">
+<h2>Settings</h2><p>Website name: <b>TANGBIRTHSANGMA</b></p><p>Theme: Blue</p><p class="small">This static version stores demo entries only in this browser. It is not a secure online account system.</p>
+<button class="secondary" onclick="closeModal('settingsModal')">Close</button>
+</div></div>
+
+<script>
+const KEY='tbs_stories_v1';
+let stories=JSON.parse(localStorage.getItem(KEY)||'[]');
+if(!stories.length){stories=[{id:1,date:'',text:'Angni jangi tangani gimin talatani gimin isko Anga nasongna parakna amenga nasongba name niangbo Anga 2009 jade-2- salde 9 tarik onga Anga angni jangi tango myonga isko nasong gimik nikchina agan natgen',published:true}];saveAll();}
+function saveAll(){localStorage.setItem(KEY,JSON.stringify(stories));}
+function show(id){['home','stories','about','contact','owner'].forEach(x=>document.getElementById(x).classList.add('hidden'));document.getElementById(id).classList.remove('hidden');if(id==='stories')renderPublic();if(id==='owner')renderOwner();}
+function renderPublic(){let p=stories.filter(s=>s.published);document.getElementById('storyList').innerHTML=p.length?p.map(s=>`<div class="card story"><div class="date">${s.date||'Life Story'}</div><p>${esc(s.text)}</p></div>`).join(''):'<div class="card">No published stories yet.</div>'}
+function renderOwner(){document.getElementById('ownerList').innerHTML=stories.map(s=>`<div class="card"><b>${s.date||'No date'}</b> — ${s.published?'Published':'Draft'}<p>${esc(s.text).slice(0,220)}${s.text.length>220?'…':''}</p></div>`).join('')}
+function saveStory(pub){let text=document.getElementById('storyText').value.trim();if(!text)return alert('Write a story first.');stories.push({id:Date.now(),date:document.getElementById('storyDate').value,text,published:pub});saveAll();document.getElementById('storyText').value='';alert(pub?'Published!':'Saved as draft.');renderOwner();}
+function openLogin(){document.getElementById('loginModal').classList.remove('hidden')}
+function login(){if(document.getElementById('password').value==='change-me'){closeModal('loginModal');show('owner')}else alert('Wrong password.')}
+function logout(){show('home')}
+function openSettings(){document.getElementById('settingsModal').classList.remove('hidden')}
+function closeModal(id){document.getElementById(id).classList.add('hidden')}
+function esc(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+renderPublic();
+</script>
+</body></html>
